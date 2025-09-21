@@ -1,0 +1,62 @@
+# version: "3.8"
+
+# services:
+#   # Service cho Database PostgreSQL
+#   db:
+#     image: postgres:15-alpine
+#     container_name: db
+#     restart: always
+#     # Chỉ đọc biến môi trường từ file .env, không hardcode credentials
+#     env_file: .env
+#     volumes:
+#       # Gắn volume để đảm bảo dữ liệu không bị mất
+#       - pgdata:/var/lib/postgresql/data
+#     networks:
+#       - my-network
+#     # Không expose port ra ngoài trừ khi thực sự cần thiết, tăng cường bảo mật
+#     # ports:
+#     #   - "5432:5432"
+#     # Healthcheck để kiểm tra khi nào DB sẵn sàng nhận kết nối
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 10
+
+#   # Service cho ứng dụng NestJS
+#   app:
+#     # Build image từ Dockerfile trong thư mục hiện tại
+#     build: .
+#     container_name: app
+#     restart: always
+#     # Tải biến môi trường từ file .env
+#     env_file: .env
+#     ports:
+#       - "8080:8080"
+#     networks:
+#       - my-network
+#     # Yêu cầu 'app' chỉ khởi động KHI 'db' đã ở trạng thái "healthy"
+#     depends_on:
+#       db:
+#         condition: service_healthy
+
+# networks:
+#   my-network:
+#     driver: bridge
+
+# volumes:
+#   pgdata:
+
+version: '3.8'
+services:
+  db: # Dịch vụ database
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Abc12345
+      POSTGRES_DB: thienbut_hoanvu
+    ports:
+      - '5432:5432' # Ánh xạ cổng ra máy host để bạn có thể kết nối từ bên ngoài
+volumes:
+  pgdata:
