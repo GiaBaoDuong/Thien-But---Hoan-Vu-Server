@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Param, Delete, UploadedFile, UseInterceptors, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Delete, UploadedFile, UseInterceptors, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { BannerService } from './banner.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateBannerDto } from './dto/create-banner.dto';
+import { UpdateBannerDto } from './dto/update-banner.dto';
 import { existsSync } from 'fs';
 import { unlink } from 'fs/promises';
 
@@ -64,10 +65,10 @@ export class BannerController {
     return this.bannerService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateBannerDto: UpdateBannerDto) {
-  //   return this.bannerService.update(+id, updateBannerDto);
-  // }
+   @Patch(':id')
+   update(@Param('id') id: string, @Body() updateBannerDto: UpdateBannerDto) {
+     return this.bannerService.update(+id, updateBannerDto);
+   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {

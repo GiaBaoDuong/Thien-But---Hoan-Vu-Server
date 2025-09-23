@@ -67,5 +67,10 @@ export class BrandController {
     update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto){
         return this.brandService.update(+id, updateBrandDto);
     }
+
+    @Delete(':id')
+    remove(@Param('id') id: string){
+        return this.brandService.remove(+id);
+    }
     
 }

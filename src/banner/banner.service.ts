@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { CreateBannerDto } from './dto/create-banner.dto';
 import { createResponse } from 'src/helper/response.helper';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateBannerDto } from './dto/update-banner.dto';
 
 @Injectable()
 export class BannerService {
@@ -29,7 +30,7 @@ constructor(private readonly prismaService: PrismaService) {}
           companyId: +createBannerDto.companyId,
         },
       });
-      return createResponse(201, 'Tạo banner thành công', banner);
+      return createResponse(200, 'Tạo banner thành công', banner);
     } catch (error) {
       throw new InternalServerErrorException('Error creating banner: ' + error.message);
     }
@@ -46,16 +47,16 @@ constructor(private readonly prismaService: PrismaService) {}
     return createResponse(200, 'Lấy thông tin banner thành công', banner);
   }
 
-  // async update(id: number, updateBannerDto: UpdateBannerDto) {
-  //   // Xác nhận banner tồn tại
-  //   await this.findById(id);
+   async update(id: number, updateBannerDto: UpdateBannerDto) {
+    // Xác nhận banner tồn tại
+     await this.findById(id);
 
-  //   const updatedBanner = await this.prismaService.banner.update({
-  //     where: { id },
-  //     data: { ...updateBannerDto },
-  //   });
-  //   return createResponse(200, 'Cập nhật banner thành công', updatedBanner);
-  // }
+     const updatedBanner = await this.prismaService.banner.update({
+       where: { id },
+       data: { ...updateBannerDto },
+     });
+     return createResponse(200, 'Cập nhật banner thành công', updatedBanner);
+   }
 
   async remove(id: number) {
     // Xác nhận banner tồn tại trước khi xóa
