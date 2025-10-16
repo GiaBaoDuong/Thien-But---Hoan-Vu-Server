@@ -49,9 +49,10 @@ export class CreateProductDto {
     @IsNumber({}, { each: true })
     net_weights: number[];
 
-    @ApiProperty({ description: 'URL ảnh đại diện sản phẩm', required: false })
+    @ApiProperty({ description: 'URL ảnh đại diện sản phẩm', required: false, type: [String] })
+    @IsArray()
     @IsOptional()
-    @IsUrl()
+    @IsUrl({require_tld: false}, {each: true})
     images?: string[];
 
     @ApiProperty({ description: 'Sản phẩm có phải là sản phẩm nổi bật?', example: false, default: false, required: false })

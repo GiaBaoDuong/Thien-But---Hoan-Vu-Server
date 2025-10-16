@@ -58,7 +58,9 @@ export class ProductsService {
     return product;
 }
   async findAll() {
-    const products = await this.prisma.product.findMany();
+    const products = await this.prisma.product.findMany({
+      include: { images: true },
+    });
     return createResponse(200, 'Lấy danh sách sản phẩm thành công', products);
   }
 
@@ -81,6 +83,8 @@ export class ProductsService {
       return createResponse(200, 'Cập nhật sản phẩm thành công', updatedProduct);
   }
 
+  
+
   async remove(id: number){
     await this.findById(id);
     await this.prisma.product.delete({
@@ -88,4 +92,32 @@ export class ProductsService {
     })
     return createResponse(200, 'Xóa sản phẩm thành công',);
   }
+
+  async getImagesByProductId(productId: number) {
+  // B1: Kiểm tra sản phẩm có tồn tại không
+  const product = await this.prisma.product.findUnique({
+    where: { id: productId },
+  });
+  if (!product) {
+    throw new NotFoundException('Sản phẩm không tồn tại');
+  }
+
+  // B2: Lấy danh sách ảnh của sản phẩm đó
+  const images = await this.prisma.productImage.findMany({
+    where: { productId },
+    orderBy: { order: 'asc' },
+  });
+
+  return createResponse(200, 'Lấy danh sách ảnh thành công', images);
+}
+
+async addImagesToProduct(productId: number, imageUrls: string[]) {
+  const imagesData = imageUrls.map((url, index) => ({
+    productId,
+    imageUrl: url,
+    order: index,
+  }));
+
+  await this.prisma.productImage.createMany({ data: imagesData });
+}
 }

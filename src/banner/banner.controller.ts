@@ -35,7 +35,7 @@ export class BannerController {
   }))
   async createBannerWithFile(
     @UploadedFile() file: Express.Multer.File,
-    @Body() createBannerDto: CreateBannerDto,
+    createBannerDto: CreateBannerDto,
   ) {
     // Xây dựng URL cho file đã tải lên (BASE_URL nên được đặt trong .env, mặc định sử dụng localhost nếu chưa có)
     const baseUrl = process.env.BASE_URL || 'http://localhost:8080';
