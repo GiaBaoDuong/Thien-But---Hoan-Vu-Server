@@ -8,12 +8,42 @@ import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
 import { existsSync } from 'fs';
 import { unlink } from 'fs/promises';
+import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 @Controller('banner')
 export class BannerController {
   constructor(private readonly bannerService: BannerService) {}
 
   @Post('upload')
+  @ApiConsumes('multipart/form-data') // Báo cho Swagger endpoint này nhận form-data
+  @ApiBody({
+    description: 'Upload ảnh banner',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'File ảnh banner (jpeg, jpg, png, gif)',
+        },
+        title: {
+          type: 'string',
+          description: 'Tiêu đề banner',
+          example: 'Banner chính'
+        },
+        description: {
+          type: 'string',
+          description: 'Mô tả banner',
+          example: 'Mô tả banner'
+        },
+        companyId: {
+          type: 'number',
+          description: 'ID công ty',
+          example: 1
+        }
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
       destination: './uploads', // lưu file vào thư mục uploads
@@ -35,7 +65,7 @@ export class BannerController {
   }))
   async createBannerWithFile(
     @UploadedFile() file: Express.Multer.File,
-    createBannerDto: CreateBannerDto,
+    @Body() createBannerDto: CreateBannerDto,
   ) {
     // Xây dựng URL cho file đã tải lên (BASE_URL nên được đặt trong .env, mặc định sử dụng localhost nếu chưa có)
     const baseUrl = process.env.BASE_URL || 'http://localhost:8080';

@@ -8,12 +8,42 @@ import { extname, join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { existsSync } from 'fs';
 import { unlink } from 'fs/promises';
+import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 @Controller('partners')
 export class PartnersController {
   constructor(private readonly partnersService: PartnersService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file',{
+  @ApiConsumes('multipart/form-data') // Báo cho Swagger endpoint này nhận form-data
+  @ApiBody({
+    description: 'Upload logo đối tác',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'File logo đối tác (jpeg, jpg, png, gif)',
+        },
+        name: {
+          type: 'string',
+          description: 'Tên đối tác',
+          example: 'Đối tác ABC'
+        },
+        description: {
+          type: 'string',
+          description: 'Mô tả đối tác',
+          example: 'Mô tả về đối tác'
+        },
+        companyId: {
+          type: 'number',
+          description: 'ID công ty',
+          example: 1
+        }
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
       destination: './uploads',
       filename: (req, file, cb) => {
@@ -29,9 +59,8 @@ export class PartnersController {
       }
       cb(null,true);
     },
-    limits: { fileSize: 5 * 1024 * 1024} // giới hạn kích thước 
+    limits: { fileSize: 5 * 1024 * 1024 } // giới hạn kích thước file tối đa 5MB
   }))
-   
   async createPartnerWithFile(
     @UploadedFile() file: Express.Multer.File,
     @Body() createPartnerDto: CreatePartnerDto,

@@ -8,12 +8,42 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { existsSync } from 'fs';
 import { unlink } from 'fs/promises';
+import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 @Controller('brand')
 export class BrandController {
     constructor(private readonly brandService : BrandService ){}
     
     @Post('upload')
+    @ApiConsumes('multipart/form-data') // Báo cho Swagger endpoint này nhận form-data
+    @ApiBody({
+        description: 'Upload logo brand',
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'File logo brand (jpeg, jpg, png, gif)',
+                },
+                name: {
+                    type: 'string',
+                    description: 'Tên brand',
+                    example: 'Nike'
+                },
+                description: {
+                    type: 'string',
+                    description: 'Mô tả brand',
+                    example: 'Thương hiệu thể thao'
+                },
+                companyId: {
+                    type: 'number',
+                    description: 'ID công ty',
+                    example: 1
+                }
+            },
+        },
+    })
     @UseInterceptors(FileInterceptor('file',{
         storage: diskStorage({
             destination: './uploads',
