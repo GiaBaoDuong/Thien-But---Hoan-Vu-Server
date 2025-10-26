@@ -13,10 +13,10 @@ import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) { }
 
-  @Post('create')
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.create(createCompanyDto);
-  }
+  //@Post('create')
+  //create(@Body() createCompanyDto: CreateCompanyDto) {
+    //return this.companyService.create(createCompanyDto);
+  //}
 
   @Post('upload')
   @ApiConsumes('multipart/form-data') // Báo cho Swagger endpoint này nhận form-data

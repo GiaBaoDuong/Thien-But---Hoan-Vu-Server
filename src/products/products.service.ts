@@ -8,6 +8,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { SearchProductDto } from './dto/search-product.dto';
 import { product as Product, Promotion } from '@prisma/client';
 import { createResponse } from 'src/helper/response.helper';
 
@@ -62,6 +63,65 @@ export class ProductsService {
       include: { images: true },
     });
     return createResponse(200, 'Lấy danh sách sản phẩm thành công', products);
+  }
+
+  async search(searchDto: SearchProductDto) {
+    const {
+      name,
+      companyId,
+      is_published,
+      is_featured,
+      is_deleted = false
+    } = searchDto;
+
+    // Xây dựng điều kiện where
+    const where: any = {};
+
+    // Tìm kiếm theo tên (không phân biệt hoa thường)
+    if (name) {
+      where.name = {
+        contains: name,
+        mode: 'insensitive'
+      };
+    }
+
+    // Lọc theo companyId
+    if (companyId) {
+      where.companyId = companyId;
+    }
+
+    // Lọc theo trạng thái published
+    if (is_published !== undefined) {
+      where.is_published = is_published;
+    }
+
+    // Lọc theo trạng thái featured
+    if (is_featured !== undefined) {
+      where.is_featured = is_featured;
+    }
+
+    // Lọc theo trạng thái deleted
+    where.is_deleted = is_deleted;
+
+    const products = await this.prisma.product.findMany({
+      where,
+      include: {
+        images: true,
+        category: true,
+        brand: true,
+        company: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return createResponse(200, 'Tìm kiếm sản phẩm thành công', products);
   }
 
   async findOne(id: number){

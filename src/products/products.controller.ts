@@ -2,6 +2,7 @@ import { ProductsService } from './products.service';
 import { Get, Body, Controller, Delete, Post, UploadedFile, UploadedFiles, UseInterceptors, Query, Put, Param } from "@nestjs/common";
 import { Product } from "./entities/product.entity";
 import { CreateProductDto } from "./dto/create-product.dto";
+import { SearchProductDto } from "./dto/search-product.dto";
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -83,6 +84,12 @@ export class ProductsController {
   @Public()
   findAll(){
     return this.productsService.findAll();
+  }
+
+  @Get('search')
+  @Public()
+  search(@Query() searchDto: SearchProductDto) {
+    return this.productsService.search(searchDto);
   }
 
   @Get(':id')
